@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Gesture Recognizer</string>
+    <string name="welcome">Welcome to Gesture Recognizer!</string>
+    <string name="explanation">[Insert Explanation Here]</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
