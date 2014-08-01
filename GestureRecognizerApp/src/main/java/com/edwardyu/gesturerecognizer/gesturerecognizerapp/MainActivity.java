@@ -251,9 +251,11 @@ public class MainActivity extends ActionBarActivity {
                 if (distanceToGestureA < distanceToGestureB) {
                     runGuess.setText("Guess: " + gestureA.getDescription());
                     guessDTWDist.setText("DTW Distance: " + distanceToGestureA);
+
                 } else {
                     runGuess.setText("Guess: " + gestureB.getDescription());
                     guessDTWDist.setText("DTW Distance: " + distanceToGestureB);
+
                 }
 
 

@@ -3,7 +3,7 @@
 
     <string name="app_name">Gesture Recognizer</string>
     <string name="welcome">Welcome to Gesture Recognizer!</string>
-    <string name="explanation">[Insert Explanation Here]</string>
+    <string name="explanation">Tap \'Begin Measuring\' to begin recording your gesture. After you tap \'Finish Measuring\', the app will try to recognize your gesture. Currently there are only two predefined gestures to be recognized against.</string>
     <string name="action_settings">Settings</string>
 
 </resources>
