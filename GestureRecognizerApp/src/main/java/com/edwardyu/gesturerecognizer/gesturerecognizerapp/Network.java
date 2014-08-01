@@ -13,6 +13,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,12 +114,13 @@ public class Network {
         return jsonArray;
     }
 
-    public static String addToAccelerometerDatabase(String systemTime, String x, String y, String z, String humanTime, String initialTime){
+    public static String addToAccelerometerDatabase(String systemTime, String x, String y, String z, String humanTime, String initialTime, String device){
         return sendSQL("INSERT INTO gestureTest (st, x, y, z, ht, description)\n" +
                 "VALUES ('"+ systemTime + "','"
                 + x + "','"
                 + y + "','"
                 + z + "','"
-                + humanTime + "','Accelerometer Reading Beginning At " + initialTime + "');");
+                + humanTime + "','Accelerometer Reading Beginning At " + initialTime
+                + " on Device " + device + "');");
     }
 }

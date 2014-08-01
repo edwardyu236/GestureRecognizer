@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.provider.Settings.Secure;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.format.Time;
@@ -54,11 +55,12 @@ public class MainActivity extends ActionBarActivity {
     private Sensor accelerometer;
     private float accelX, accelY, accelZ;
 
-
     // UI
     private TextView runDescription;
     private TextView runGuess;
     private TextView guessDTWDist;
+
+    private String device;
 
     private SensorEventListener accelerometerListener = new SensorEventListener() {
         @Override
@@ -82,7 +84,7 @@ public class MainActivity extends ActionBarActivity {
                         String formattedTime = time.format("%Y-%m-%d %H:%M:%S");
                         Log.i(TAG, formattedTime + "(accel): " + accelX + ", " + accelY + ", " + accelZ);
                         String systemTimeString = systemTime + "";
-                        Network.addToAccelerometerDatabase(systemTimeString, accelX + "", accelY + "", accelZ + "", formattedTime, initialTime);
+                        Network.addToAccelerometerDatabase(systemTimeString, accelX + "", accelY + "", accelZ + "", formattedTime, initialTime, device);
                     }
                 }.start();
 
@@ -100,6 +102,9 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // set up device id
+        device = android.os.Build.SERIAL;
 
         // set up accelerometer
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -229,7 +234,7 @@ public class MainActivity extends ActionBarActivity {
                 measuringButton.setText("Begin Measuring");
                 Toast.makeText(getApplicationContext(),
                         "Stopping measurements", Toast.LENGTH_SHORT).show();
-                
+
                 currentRunList = new ArrayList<TimeDataContainer>(new TreeSet<TimeDataContainer>(currentRunList));
                 Collections.sort(currentRunList);
                 for (TimeDataContainer container : currentRunList) {
@@ -237,7 +242,8 @@ public class MainActivity extends ActionBarActivity {
                     currentRunSeries.addLast(container.getTime(), new TimeSeriesPoint(container.getData()));
                 }
 
-                runDescription.setText("Latest Description: Accelerometer Reading Beginning At " + initialTime);
+                runDescription.setText("Latest Description: Accelerometer Reading Beginning At "
+                        + initialTime + " on Device " + device);
 
                 double distanceToGestureA = DTW.getWarpDistBetween(gestureA.getTimeSeries(), currentRunSeries);
                 double distanceToGestureB = DTW.getWarpDistBetween(gestureB.getTimeSeries(), currentRunSeries);
@@ -262,7 +268,8 @@ public class MainActivity extends ActionBarActivity {
                 currentRunList = new ArrayList<TimeDataContainer>();
                 currentRunSeries = new TimeSeries(3);
 
-                runDescription.setText("Current Description: Accelerometer Reading Beginning At " + initialTime);
+                runDescription.setText("Current Description: Accelerometer Reading Beginning At "
+                        + initialTime + " on Device " + device);
                 runGuess.setText("[Insert Guess of Run]");
                 guessDTWDist.setText("[Insert DTW Dist of Run]");
 
