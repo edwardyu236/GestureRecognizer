@@ -38,7 +38,7 @@
         />
 
     <TextView
-        android:id="@+id/description"
+        android:id="@+id/run_description"
         android:text="[Insert Description of Run]"
         android:textSize="15sp"
         android:layout_height="wrap_content"
@@ -48,22 +48,22 @@
         />
 
     <TextView
-        android:id="@+id/guess"
+        android:id="@+id/run_guess"
         android:text="[Insert Guess of Run]"
         android:textSize="15sp"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:layout_below="@+id/description"
+        android:layout_below="@+id/run_description"
         android:layout_marginTop="10dp"
         />
 
     <TextView
-        android:id="@+id/dtwDist"
+        android:id="@+id/guess_dtwDist"
         android:text="[Insert DTW Dist of Run]"
         android:textSize="15sp"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:layout_below="@+id/guess"
+        android:layout_below="@+id/run_guess"
         android:layout_marginTop="10dp"
         />
 
