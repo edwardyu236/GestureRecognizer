@@ -108,6 +108,7 @@ public class Network {
             }
         } else {
             Log.e("url", "sendsql Error Connecting/Getting Data.");
+            Log.e("url", "The command was " + sqlCommand);
         }
         return jsonArray;
     }

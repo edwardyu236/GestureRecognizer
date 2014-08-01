@@ -117,6 +117,8 @@ public class MainActivity extends ActionBarActivity {
         runGuess = (TextView) findViewById(R.id.run_guess);
         guessDTWDist = (TextView) findViewById(R.id.guess_dtwDist);
 
+        Log.d(TAG, "Finished basic part of onCreate");
+
 
         // get library runs
         new Thread() {
@@ -125,14 +127,20 @@ public class MainActivity extends ActionBarActivity {
                 String gestureBDescription = "gestureB_leftAndReturn";
                 gestureA = makeTimeSeriesContainer(gestureADescription);
                 gestureB = makeTimeSeriesContainer(gestureBDescription);
-                if (gestureA == null || gestureB == null) {
-                    Toast.makeText(getApplicationContext(), "Unable to load gestures!", Toast.LENGTH_SHORT).show();
-                }
+//                if (gestureA == null || gestureB == null) {
+//                    Toast.makeText(getApplicationContext(), "Unable to load gestures!", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "Gestures Loaded!", Toast.LENGTH_SHORT).show();
+//                }
 
             }
+
             private TimeSeriesContainer makeTimeSeriesContainer(String description) {
                 JSONArray jsonArray = Network.sendSQLExpectJSONArray(
-                        "SELECT * FROM `asensor` WHERE `description` = \""+ description +"\";\n");
+                        "SELECT * FROM `gestureLibrary` WHERE `description` = \"" + description + "\";\n");
+//                JSONArray jsonArray = Network.sendSQLExpectJSONArray(
+//                        "SELECT * FROM `gestureLibrary`;\n");
+
                 if (jsonArray != null) {
                     try {
                         // create list for run which contains entries
@@ -157,9 +165,12 @@ public class MainActivity extends ActionBarActivity {
                             Log.d(TAG, "Adding " + container + " to TimeSeries");
                             series.addLast(container.getTime(), new TimeSeriesPoint(container.getData()));
                         }
+                        Log.d(TAG, "Hopefully success!");
                         return new TimeSeriesContainer(description, series);
                     } catch (JSONException e) {
                         Log.w(TAG, "Exception: " + e.getMessage());
+                        Toast.makeText(getApplicationContext(), "Exception!", Toast.LENGTH_SHORT).show();
+
                     }
 
                 }
@@ -167,6 +178,11 @@ public class MainActivity extends ActionBarActivity {
             }
         }.start();
 
+//        if (gestureA == null || gestureB == null) {
+//            Toast.makeText(getApplicationContext(), "Unable to load gestures!", Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(getApplicationContext(), "Gestures Loaded!", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @Override
@@ -206,42 +222,47 @@ public class MainActivity extends ActionBarActivity {
 
 
     public void toggleMeasuring(View view) {
-        if (measuring) {
-
-            measuring = false;
-            measuringButton.setText("Begin Measuring");
-            Toast.makeText(getApplicationContext(),
-                    "Stopping measurements", Toast.LENGTH_SHORT).show();
-
-            runDescription.setText("Latest Description: Accelerometer Reading Beginning At " + initialTime);
-
-            double distanceToGestureA = DTW.getWarpDistBetween(gestureA.getTimeSeries(), currentRun);
-            double distanceToGestureB = DTW.getWarpDistBetween(gestureB.getTimeSeries(), currentRun);
-
-            if (distanceToGestureA < distanceToGestureB) {
-                runGuess.setText("Guess: " + gestureA.getDescription());
-                guessDTWDist.setText("DTW Distance: " + distanceToGestureA);
-            } else {
-                runGuess.setText("Guess: " + gestureB.getDescription());
-                guessDTWDist.setText("DTW Distance: " + distanceToGestureB);
-            }
-
-
+        if (gestureA == null || gestureB == null) {
+            Toast.makeText(getApplicationContext(), "Unable to load library gestures!", Toast.LENGTH_SHORT).show();
         } else {
+            if (measuring) {
 
-            measuring = true;
-            measuringButton.setText("Stop Measuring");
-            Toast.makeText(getApplicationContext(),
-                    "Starting measurements", Toast.LENGTH_SHORT).show();
+                measuring = false;
+                measuringButton.setText("Begin Measuring");
+                Toast.makeText(getApplicationContext(),
+                        "Stopping measurements", Toast.LENGTH_SHORT).show();
 
-            initialTime = (new Date()).getTime() + "";
-            currentRun = new TimeSeries(3);
+                runDescription.setText("Latest Description: Accelerometer Reading Beginning At " + initialTime);
 
-            runDescription.setText("Current Description: Accelerometer Reading Beginning At " + initialTime);
-            runGuess.setText("[Insert Guess of Run]");
-            guessDTWDist.setText("[Insert DTW Dist of Run]");
+                double distanceToGestureA = DTW.getWarpDistBetween(gestureA.getTimeSeries(), currentRun);
+                double distanceToGestureB = DTW.getWarpDistBetween(gestureB.getTimeSeries(), currentRun);
 
+                if (distanceToGestureA < distanceToGestureB) {
+                    runGuess.setText("Guess: " + gestureA.getDescription());
+                    guessDTWDist.setText("DTW Distance: " + distanceToGestureA);
+                } else {
+                    runGuess.setText("Guess: " + gestureB.getDescription());
+                    guessDTWDist.setText("DTW Distance: " + distanceToGestureB);
+                }
+
+
+            } else {
+
+                measuring = true;
+                measuringButton.setText("Stop Measuring");
+                Toast.makeText(getApplicationContext(),
+                        "Starting measurements", Toast.LENGTH_SHORT).show();
+
+                initialTime = (new Date()).getTime() + "";
+                currentRun = new TimeSeries(3);
+
+                runDescription.setText("Current Description: Accelerometer Reading Beginning At " + initialTime);
+                runGuess.setText("[Insert Guess of Run]");
+                guessDTWDist.setText("[Insert DTW Dist of Run]");
+
+            }
         }
+
     }
 
 
