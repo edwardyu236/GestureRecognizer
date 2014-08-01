@@ -23,12 +23,10 @@ import net.sf.javaml.distance.fastdtw.timeseries.TimeSeriesPoint;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.TreeSet;
 
 
@@ -42,7 +40,8 @@ public class MainActivity extends ActionBarActivity {
     // measuring + current run
     private boolean measuring;
     private Button measuringButton;
-    private TimeSeries currentRun;
+    private ArrayList<TimeDataContainer> currentRunList;
+    private TimeSeries currentRunSeries;
     private String initialTime;
 
 
@@ -75,8 +74,7 @@ public class MainActivity extends ActionBarActivity {
             if (measuring)
             {
                 // add to current run
-                double[] accelArray = {accelX, accelY, accelZ};
-                currentRun.addLast(systemTime, new TimeSeriesPoint(accelArray));
+                currentRunList.add(new TimeDataContainer(systemTime, accelX, accelY, accelZ));
 
                 // upload to database
                 new Thread() {
@@ -231,11 +229,18 @@ public class MainActivity extends ActionBarActivity {
                 measuringButton.setText("Begin Measuring");
                 Toast.makeText(getApplicationContext(),
                         "Stopping measurements", Toast.LENGTH_SHORT).show();
+                
+                currentRunList = new ArrayList<TimeDataContainer>(new TreeSet<TimeDataContainer>(currentRunList));
+                Collections.sort(currentRunList);
+                for (TimeDataContainer container : currentRunList) {
+                    Log.d(TAG, "Adding " + container + " to TimeSeries");
+                    currentRunSeries.addLast(container.getTime(), new TimeSeriesPoint(container.getData()));
+                }
 
                 runDescription.setText("Latest Description: Accelerometer Reading Beginning At " + initialTime);
 
-                double distanceToGestureA = DTW.getWarpDistBetween(gestureA.getTimeSeries(), currentRun);
-                double distanceToGestureB = DTW.getWarpDistBetween(gestureB.getTimeSeries(), currentRun);
+                double distanceToGestureA = DTW.getWarpDistBetween(gestureA.getTimeSeries(), currentRunSeries);
+                double distanceToGestureB = DTW.getWarpDistBetween(gestureB.getTimeSeries(), currentRunSeries);
 
                 if (distanceToGestureA < distanceToGestureB) {
                     runGuess.setText("Guess: " + gestureA.getDescription());
@@ -254,7 +259,8 @@ public class MainActivity extends ActionBarActivity {
                         "Starting measurements", Toast.LENGTH_SHORT).show();
 
                 initialTime = (new Date()).getTime() + "";
-                currentRun = new TimeSeries(3);
+                currentRunList = new ArrayList<TimeDataContainer>();
+                currentRunSeries = new TimeSeries(3);
 
                 runDescription.setText("Current Description: Accelerometer Reading Beginning At " + initialTime);
                 runGuess.setText("[Insert Guess of Run]");

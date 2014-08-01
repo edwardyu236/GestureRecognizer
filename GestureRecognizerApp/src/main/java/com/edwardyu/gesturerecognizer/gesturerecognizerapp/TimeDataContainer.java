@@ -22,6 +22,13 @@ public class TimeDataContainer implements Comparable<TimeDataContainer>{
 //        this.time = time;
 //    }
 
+    public TimeDataContainer(long time, double x, double y, double z) {
+        this.time = time;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     public TimeDataContainer(JSONObject entry) throws JSONException {
         time = Long.parseLong(entry.getString("st"));
         x = Double.parseDouble(entry.getString("x"));
